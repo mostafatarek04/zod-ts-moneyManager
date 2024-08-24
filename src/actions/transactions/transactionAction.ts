@@ -2,30 +2,37 @@
 import prisma from "@/db";
 import { Method, Type } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import {
+  transactionSchema,
+  TtransactionSchema,
+} from "@/schemas/transactionSchema";
+import { z, ZodError } from "zod";
 
-export async function addTransactionAction(
-  formData: FormData,
-  category: string
-) {
-  const userId = "clzoheuoy0000zf56yv81w3bj";
+export async function addTransactionAction(data: TtransactionSchema) {
+  console.log("gogogojg");
 
-  console.log(formData.get("amount"));
-
-  const newTransaction = await prisma.transaction.create({
-    data: {
-      title: formData.get("title") as string,
-      describtion: formData.get("title") as string,
-      amount: +(formData.get("amount") as string),
-      type: formData.get("type") as Type,
-      method: formData.get("method") as Method,
-      category: "Home",
-      user: {
-        connect: {
-          id: userId,
+  const userId = "cm055yz6400008gox45sqhdnm";
+  try {
+    transactionSchema.parse(data);
+    await prisma.transaction.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        amount: data.amount,
+        type: data.type as Type,
+        method: data.method as Method,
+        category: data.category,
+        user: {
+          connect: {
+            id: userId,
+          },
         },
       },
-    },
-  });
-  revalidatePath("/all-transactions");
-  console.log(newTransaction);
+    });
+  } catch (error) {
+    console.log("Error occured with" + error);
+    if (error instanceof z.ZodError) {
+      console.log(error.issues[0].message);
+    }
+  }
 }

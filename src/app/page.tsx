@@ -1,12 +1,16 @@
 import prisma from "@/db";
 
 export default async function Home() {
-  const users = await prisma.user.findMany();
+  const newTest = await prisma.test.create({
+    data: {
+      title: "sisis",
+    },
+  });
+  console.log(newTest);
+
   return (
     <>
-      {users.map((user) => {
-        return <h1>{user.id}</h1>;
-      })}
+      <h1>This is Home page</h1>
     </>
   );
 }

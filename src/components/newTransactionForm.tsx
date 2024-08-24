@@ -1,75 +1,97 @@
 "use client";
-import { useRef, useState } from "react";
 import { Input, Textarea } from "@nextui-org/input";
 import { Select, SelectItem } from "@nextui-org/select";
 import SubmitButton from "./submitFormButton";
+import { useForm } from "react-hook-form";
 import { addTransactionAction } from "@/actions/transactions/transactionAction";
+import {
+  TtransactionSchema,
+  transactionSchema,
+} from "@/schemas/transactionSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 export default function NewTransactionForm() {
-  const titleRef = useRef<HTMLInputElement>(null);
-  const descRef = useRef<HTMLTextAreaElement>(null);
-  const amountRef = useRef<HTMLInputElement>(null);
-  const typeRef = useRef<HTMLSelectElement>(null);
-
-  const addTransaction = async (formData: FormData) => {
-    console.log("The title ref =" + titleRef.current?.value);
-    console.log("The desc ref =" + descRef.current?.value);
-    console.log("The amount ref =" + amountRef.current?.value);
-    console.log("The type ref =" + typeRef.current?.value);
-    await addTransactionAction(formData, "idid");
+  const {
+    register,
+    reset,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+  } = useForm<TtransactionSchema>({
+    resolver: zodResolver(transactionSchema),
+  });
+  const onSubmit = async (data: TtransactionSchema) => {
+    // console.log(data);
+    console.log(data);
+    try {
+      transactionSchema.parse(data);
+      addTransactionAction(data);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log("oofofof");
+      }
+    }
   };
   return (
-    <form action={addTransaction} autoComplete="off">
+    <form
+      autoComplete="off"
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6"
+    >
       <Input
-        ref={titleRef}
-        type="text"
-        name="title"
-        placeholder="Transaction Title"
-        label="Transaction  Title"
-        className="my-4"
+        label="Transaction Title"
+        placeholder="ex: dinner out with friends"
+        variant="underlined"
+        {...register("title")}
       />
+
       <Textarea
-        ref={descRef}
-        minRows={3}
         label="Transaction Description"
-        placeholder="Enter your description"
-        name="desc"
+        placeholder="ex: dinner out with friends where we had alot of fun and stuff"
+        variant="underlined"
+        minRows={3}
+        {...register("description")}
       />
-      <div className="flex gap-2 items-center my-4">
+
+      <Input
+        label="Transaction Amount"
+        type="number"
+        placeholder="ex: 10000"
+        variant="underlined"
+        {...register("amount")}
+      />
+      <div className="flex gap-x-3">
         <Select
           label="Transaction Method"
-          placeholder="Select Transaction Method"
-          className="grow"
-          name="method"
+          placeholder="Choose a transaction method"
+          variant="underlined"
+          {...register("method")}
         >
-          <SelectItem key={"VISA"}>Visa</SelectItem>
           <SelectItem key={"CASH"}>Cash</SelectItem>
+          <SelectItem key={"CREDIT"}>Credit</SelectItem>
         </Select>
         <Select
           label="Transaction Type"
-          placeholder="Select Transaction Method"
-          className="grow"
-          ref={typeRef}
-          name="type"
+          placeholder="Choose a transaction type"
+          variant="underlined"
+          {...register("type")}
         >
           <SelectItem key={"INCOME"}>Income</SelectItem>
           <SelectItem key={"SPENDING"}>Spending</SelectItem>
         </Select>
-        <Input
-          ref={amountRef}
-          type="number"
-          name="amount"
-          placeholder="Transaction Amount"
-          label="Transaction  Amount"
-          className="grow"
-        />
       </div>
-      <h3 className="my-4 text-xl ">Select Transaction Category:</h3>
-      <div className="flex gap-4 my-4">
-        <div className="p-4 cursor-pointer rounded-2xl bg-gray-100 text-blue-950">
-          HOME
-        </div>
-      </div>
-      <SubmitButton />
+      <Input
+        label="Transaction Category"
+        type="text"
+        placeholder="ex: Home Supplies"
+        variant="underlined"
+        {...register("category")}
+      />
+      <button
+        className="bg-gray-900 text-white text-center w-full py-6 rounded-xl text-2xl"
+        type="submit"
+      >
+        Add Transaction
+      </button>
     </form>
   );
 }
