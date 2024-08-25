@@ -11,7 +11,8 @@ import { z, ZodError } from "zod";
 export async function addTransactionAction(data: TtransactionSchema) {
   console.log("gogogojg");
 
-  const userId = "cm055yz6400008gox45sqhdnm";
+  // const userId = "cm055yz6400008gox45sqhdnm"; // Macbook
+  const userId = "cm08eeaw80000nc3soqs7e5am"; // Asus
   try {
     transactionSchema.parse(data);
     await prisma.transaction.create({
