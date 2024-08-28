@@ -1,11 +1,13 @@
+"use client";
 import {
   Card,
   CardHeader,
   CardBody,
   CardFooter,
   Avatar,
-  Button,
 } from "@nextui-org/react";
+import { Button } from "@nextui-org/button";
+import DeleteModal from "./deleteModal";
 type TransactionCardProps = {
   title: string;
   description: string;
@@ -14,8 +16,18 @@ type TransactionCardProps = {
   category: string;
   method: string;
   type: string;
+  id: string;
+  isShowButtons: boolean;
+  deleteHandler?: unknown;
+  transactions?: unknown;
+  index?: number;
 };
 export default function TransactionCard({
+  id,
+  deleteHandler,
+  index,
+  transactions,
+  isShowButtons,
   title,
   type,
   method,
@@ -30,6 +42,28 @@ export default function TransactionCard({
         <div>
           <h3 className="text-small font-semibold text-gray-600">{title}</h3>
         </div>
+        {isShowButtons && (
+          <div className="flex gap-x-2">
+            <Button className="bg-sky-900 text-white rounded-xl p-3">
+              Edit
+            </Button>
+
+            <DeleteModal
+              transactions={transactions}
+              index={index}
+              deleteHandler={deleteHandler}
+              id={id}
+              title={title}
+              description={description}
+              date={""}
+              amount={amount}
+              category={category}
+              method={method}
+              type={type}
+              isShowButtons={false}
+            />
+          </div>
+        )}
       </CardHeader>
       <CardBody className="space-y-4">
         <p>{description}</p>

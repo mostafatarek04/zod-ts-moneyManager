@@ -11,8 +11,8 @@ import { z, ZodError } from "zod";
 export async function addTransactionAction(data: TtransactionSchema) {
   console.log("gogogojg");
 
-  // const userId = "cm055yz6400008gox45sqhdnm"; // Macbook
-  const userId = "cm08eeaw80000nc3soqs7e5am"; // Asus
+  const userId = "cm055yz6400008gox45sqhdnm"; // Macbook
+  // const userId = "cm08eeaw80000nc3soqs7e5am"; // Asus
   try {
     transactionSchema.parse(data);
     await prisma.transaction.create({
@@ -30,10 +30,34 @@ export async function addTransactionAction(data: TtransactionSchema) {
         },
       },
     });
+    revalidatePath("/all-transactions");
   } catch (error) {
     console.log("Error occured with" + error);
     if (error instanceof z.ZodError) {
       console.log(error.issues[0].message);
     }
   }
+}
+
+export async function deleteTransactionAction(id: string) {
+  const deleteTransaction = await prisma.transaction.delete({
+    where: {
+      id,
+    },
+  });
+  revalidatePath("/all-transactions");
+}
+
+export async function getTransactionBySearchAction(title: string) {
+  console.log("iririririjhei");
+
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      title: {
+        contains: title,
+        mode: "insensitive",
+      },
+    },
+  });
+  return transactions;
 }

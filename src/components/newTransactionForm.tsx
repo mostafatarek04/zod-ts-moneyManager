@@ -24,7 +24,8 @@ export default function NewTransactionForm() {
     console.log(data);
     try {
       transactionSchema.parse(data);
-      addTransactionAction(data);
+      await addTransactionAction(data);
+      reset();
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.log("oofofof");

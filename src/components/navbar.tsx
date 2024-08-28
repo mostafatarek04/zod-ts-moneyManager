@@ -16,6 +16,9 @@ export default function Navbar() {
             <Link href="/add-new-transaction">Add Transaction</Link>
           </li>
           <li>
+            <Link href="/transaction-report">Transaction Report</Link>
+          </li>
+          <li>
             <Link href="/">Profile</Link>
           </li>
           <li>

@@ -1,8 +1,11 @@
 import TransactionCard from "@/components/transactionCard";
 import prisma from "@/db";
 import { Progress } from "@nextui-org/react";
+import { getTotalspent } from "@/lib/transactions";
+import RecentTransactions from "@/components/recentTransactions";
 export default async function AllTransaction() {
   const transactions = await prisma.transaction.findMany();
+  const totalSpent = getTotalspent(transactions);
   return (
     <main className="container px-10 pt-10">
       <div className="flex">
@@ -23,12 +26,6 @@ export default async function AllTransaction() {
           </div>
         </div>
         <div className="flex-grow p-8">
-          {/* <h3 className="text-primaryDark font-semibold text-lg">
-            Monthly Budget
-          </h3>
-          <p className="font-gray-400 text-sm">
-            Keep it up you can save up to 400 this month
-          </p> */}
           <Progress
             label={
               <h3 className="text-primaryDark font-semibold text-lg">
@@ -39,8 +36,8 @@ export default async function AllTransaction() {
               </h3>
             }
             size="md"
-            value={4000}
-            maxValue={10000}
+            value={totalSpent}
+            maxValue={100000}
             color="primary"
             classNames={{
               // base: "max-w-md",
@@ -55,21 +52,7 @@ export default async function AllTransaction() {
           />
         </div>
       </div>
-      <div className="pt-10 space-y-8">
-        {transactions.map((transaction, index) => {
-          return (
-            <TransactionCard
-              title={transaction.title}
-              description={transaction.description}
-              date={"Friday 28-06-2024"}
-              amount={transaction.amount}
-              category={transaction.category}
-              method={transaction.method}
-              type={transaction.type}
-            />
-          );
-        })}
-      </div>
+      <RecentTransactions transactions={transactions} />
     </main>
   );
 }
